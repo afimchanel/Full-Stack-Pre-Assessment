@@ -19,7 +19,7 @@ describe('ProductsService', () => {
                     provide: getRepositoryToken(Product),
                     useValue: {
                         save: jest.fn(),
-                        find: jest.fn(),  // Use jest.fn() to mock the find method directly
+                        find: jest.fn(),
                         createQueryBuilder: jest.fn(),
                     },
                 },
@@ -36,14 +36,14 @@ describe('ProductsService', () => {
         productsRepository = module.get<Repository<Product>>(getRepositoryToken(Product));
         translationsRepository = module.get<Repository<ProductTranslation>>(getRepositoryToken(ProductTranslation));
 
-        // Mocking the 'save' methods for both repositories
+
         jest.spyOn(productsRepository, 'save').mockResolvedValue({} as Product);
         jest.spyOn(translationsRepository, 'save').mockResolvedValue({} as ProductTranslation);
 
-        // Mocking the 'find' method for productsRepository
-        (productsRepository.find as jest.Mock).mockResolvedValue([]);  // Mocking find to return an empty array by default
 
-        // Mock 'createQueryBuilder' method and chain the methods (like where, andWhere, getMany)
+        (productsRepository.find as jest.Mock).mockResolvedValue([]);
+
+
         jest.spyOn(productsRepository, 'createQueryBuilder').mockReturnValue({
             where: jest.fn().mockReturnThis(),
             andWhere: jest.fn().mockReturnThis(),
@@ -51,7 +51,7 @@ describe('ProductsService', () => {
         } as any);
     });
 
-    // Test for 'create' method
+
     it('should successfully create a product and translations in English', async () => {
         const createProductDto: CreateProductDto = {
             default_language: 'en',
@@ -62,13 +62,13 @@ describe('ProductsService', () => {
 
         const result = await service.create(createProductDto);
 
-        // Check that the product is created with the correct default language
+
         expect(result.default_language).toBe('en');
         expect(productsRepository.save).toHaveBeenCalled();
-        expect(translationsRepository.save).toHaveBeenCalledTimes(1); // Should save one translation
+        expect(translationsRepository.save).toHaveBeenCalledTimes(1);
     });
 
-    // Test for 'search' method - should return empty array if no products found
+
     it('should return empty array if no products found', async () => {
         const searchQuery = 'Nonexistent Product';
         const language = 'en';
@@ -83,7 +83,7 @@ describe('ProductsService', () => {
         expect(result).toEqual([]);
     });
 
-    // Test for 'search' method - should return products filtered by language "en"
+
     it('should return products filtered by language "en"', async () => {
         const mockProduct: Product = {
             id: 1,
@@ -93,18 +93,18 @@ describe('ProductsService', () => {
             ],
         } as Product;
 
-        // Mocking find to return a product
+
         (productsRepository.find as jest.Mock).mockResolvedValue([mockProduct]);
 
         const result = await service.search('Product Name', 'en', 1, 10);
 
-        // Check that the result contains the mock product
+
         expect(result).toEqual([mockProduct]);
         expect(productsRepository.find).toHaveBeenCalledWith({
             relations: ['translations'],
             where: {
                 translations: {
-                    name: expect.anything(), // Matching the name dynamically
+                    name: expect.anything(),
                     language: 'en',
                 },
             },
@@ -113,7 +113,7 @@ describe('ProductsService', () => {
         });
     });
 
-    // Test for 'search' method - should return products filtered by language "th"
+
     it('should return products filtered by language "th"', async () => {
         const mockProduct: Product = {
             id: 2,
@@ -131,13 +131,12 @@ describe('ProductsService', () => {
         expect(result).toEqual([mockProduct]);
     });
 
-    // Test for 'search' method - should return empty array if no products match the search query
+
     it('should return empty array if no products match the search query', async () => {
-        (productsRepository.find as jest.Mock).mockResolvedValue([]);  // Mocking find to return empty array
+        (productsRepository.find as jest.Mock).mockResolvedValue([]);
 
         const result = await service.search('Nonexistent Product', 'en', 1, 10);
 
-        // Expect an empty array because no product matches
         expect(result).toEqual([]);
     });
 });

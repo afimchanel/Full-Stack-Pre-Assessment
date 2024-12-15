@@ -23,13 +23,13 @@ describe('ProductsController', () => {
     await app.init();
   });
 
-  // Test for creating a product with different default languages (en, th)
+
   it('should create a product with default language "en"', async () => {
     const newProduct = new Product();
     newProduct.id = 1;
     newProduct.default_language = 'en';
     newProduct.translations = [
-      new ProductTranslation(), // Mock a translation for "en"
+      new ProductTranslation(),
     ];
 
     const createProductDto = {
@@ -56,7 +56,7 @@ describe('ProductsController', () => {
     newProduct.id = 2;
     newProduct.default_language = 'th';
     newProduct.translations = [
-      new ProductTranslation(), // Mock a translation for "th"
+      new ProductTranslation(),
     ];
 
     const createProductDto = {
@@ -78,26 +78,26 @@ describe('ProductsController', () => {
       });
   });
 
-  // Test for searching products by language (en, th)
+
   it('should return products filtered by language "en"', async () => {
     // Create a new Product
     const product = new Product();
     product.id = 1;
     product.default_language = 'en';
 
-    // Create a valid ProductTranslation for "en" language
+
     const productTranslation = new ProductTranslation();
     productTranslation.language = 'en';
-    productTranslation.name = 'Product Name';  // Example product name in English
-    productTranslation.description = 'Product Description';  // Example product description in English
+    productTranslation.name = 'Product Name';
+    productTranslation.description = 'Product Description';
 
-    // Assign the translation to the product
+
     product.translations = [productTranslation];
 
-    // Mock the service to return the product with translations
+
     productsService.search.mockResolvedValue([product]);
 
-    // Perform the GET request to search products with query and language "en"
+
     return request(app.getHttpServer())
       .get('/products/search')
       .query({ query: 'Product', language: 'en', page: 1, limit: 10 })
@@ -112,29 +112,29 @@ describe('ProductsController', () => {
             description: 'Product Description',
           }
         ]
-      }]); // Expected response with valid translation
+      }]);
   });
 
 
   it('should return products filtered by language "th" (Thai)', async () => {
-    // Create a new Product
+
     const product = new Product();
     product.id = 2;
     product.default_language = 'th';
 
-    // Create a valid ProductTranslation for "th" language
+
     const productTranslation = new ProductTranslation();
     productTranslation.language = 'th';
-    productTranslation.name = 'ชื่อสินค้า';  // Example product name in Thai
-    productTranslation.description = 'คำอธิบายสินค้า';  // Example product description in Thai
+    productTranslation.name = 'ชื่อสินค้า';
+    productTranslation.description = 'คำอธิบายสินค้า';
 
-    // Assign the translation to the product
+
     product.translations = [productTranslation];
 
-    // Mock the service to return the product with translations
+
     productsService.search.mockResolvedValue([product]);
 
-    // Perform the GET request to search products with query and language "th"
+
     return request(app.getHttpServer())
       .get('/products/search')
       .query({ query: 'ชื่อสินค้า', language: 'th', page: 1, limit: 10 })
@@ -149,7 +149,7 @@ describe('ProductsController', () => {
             description: 'คำอธิบายสินค้า',
           }
         ]
-      }]); // Expected response with valid translation
+      }]);
   });
 
   afterAll(async () => {
